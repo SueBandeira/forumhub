@@ -1,6 +1,9 @@
 package br.com.alura.forumhub.controller;
 
-import br.com.alura.forumhub.domain.usuario.DadosAtenticacao;
+import br.com.alura.forumhub.domain.usuario.DadosAutenticacao;
+import br.com.alura.forumhub.domain.usuario.Usuario;
+import br.com.alura.forumhub.infra.security.DadosTokenJWT;
+import br.com.alura.forumhub.infra.security.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,13 +21,33 @@ public class AutenticacaoController {
   @Autowired
   private AuthenticationManager manager;
 
-  @PostMapping
-  public ResponseEntity efetuarLogin (@RequestBody @Valid DadosAtenticacao dados) {
-   var token = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
-    var authentication = manager.authenticate(token);
+  @Autowired
+  private TokenService tokenService;
 
-    //return ResponseEntity.ok().build();
-    return ResponseEntity.ok("123456");
+//  @PostMapping
+//  public ResponseEntity efetuarLogin (@RequestBody @Valid DadosAtenticacao dados) {
+//   var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
+//    var authentication = manager.authenticate(authenticationToken);
+//
+//    var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+//
+//    //return ResponseEntity.ok().build();
+//    return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
+//  }
+
+  @PostMapping
+  public ResponseEntity<DadosTokenJWT> efetuarLogin(@RequestBody @Valid DadosAutenticacao dados) throws Exception {
+    try {
+      var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
+      var authentication = manager.authenticate(authenticationToken);
+
+      var tokenJWT = tokenService.gerarToken((Usuario) authentication.getPrincipal());
+
+      return ResponseEntity.ok(new DadosTokenJWT(tokenJWT));
+    } catch (Exception e) {
+      e.printStackTrace();
+      throw new Exception(e.getMessage());
+    }
   }
 
 }
