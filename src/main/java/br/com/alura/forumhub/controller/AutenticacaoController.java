@@ -2,6 +2,7 @@ package br.com.alura.forumhub.controller;
 
 import br.com.alura.forumhub.domain.usuario.DadosAutenticacao;
 import br.com.alura.forumhub.domain.usuario.Usuario;
+import br.com.alura.forumhub.domain.usuario.UsuarioRepository;
 import br.com.alura.forumhub.infra.security.DadosTokenJWT;
 import br.com.alura.forumhub.infra.security.TokenService;
 import jakarta.validation.Valid;
@@ -24,8 +25,11 @@ public class AutenticacaoController {
   @Autowired
   private TokenService tokenService;
 
+  @Autowired
+  private UsuarioRepository repository;
+
 //  @PostMapping
-//  public ResponseEntity efetuarLogin (@RequestBody @Valid DadosAtenticacao dados) {
+//  public ResponseEntity efetuarLogin (@RequestBody @Valid DadosAutenticacao dados) {
 //   var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
 //    var authentication = manager.authenticate(authenticationToken);
 //
@@ -37,6 +41,8 @@ public class AutenticacaoController {
 
   @PostMapping
   public ResponseEntity<DadosTokenJWT> efetuarLogin(@RequestBody @Valid DadosAutenticacao dados) throws Exception {
+    System.out.println("DADOS:" + dados);
+
     try {
       var authenticationToken = new UsernamePasswordAuthenticationToken(dados.login(), dados.senha());
       var authentication = manager.authenticate(authenticationToken);
@@ -48,6 +54,13 @@ public class AutenticacaoController {
       e.printStackTrace();
       throw new Exception(e.getMessage());
     }
+  }
+
+  @PostMapping("/cadastro")
+  public ResponseEntity cadastrarUsuario(@RequestBody @Valid DadosAutenticacao dados) {
+    var userNovo = repository.save(new Usuario(dados.login(), dados.senha()));
+
+    return ResponseEntity.ok(userNovo);
   }
 
 }

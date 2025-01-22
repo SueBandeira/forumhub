@@ -16,7 +16,7 @@ import java.util.List;
 @Entity(name = "Usuario")
 //@NoArgsConstructor
 //@AllArgsConstructor
-@EqualsAndHashCode(of = "id")
+//@EqualsAndHashCode(of = "id")
 public class Usuario implements UserDetails {
 
   @Id
@@ -26,6 +26,19 @@ public class Usuario implements UserDetails {
   private String senha;
 
   public Usuario() {}
+
+  public Usuario(String login, String senha) {
+    this.login = login;
+    this.senha = SenhaUtil.senhaCripto(senha);
+  }
+
+  public Long getId() {
+    return id;
+  }
+
+  public void setId(Long id) {
+    this.id = id;
+  }
 
   public String getLogin() {
     return login;

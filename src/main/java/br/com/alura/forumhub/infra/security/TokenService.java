@@ -22,11 +22,19 @@ public class TokenService {
   public String gerarToken(Usuario usuario) {
     try {
       var algoritmo = Algorithm.HMAC256(secret);
-      return JWT.create()
+      var tokenGerado = JWT.create()
           .withIssuer("API Forum Hub")
           .withSubject(usuario.getLogin())
           .withExpiresAt(dataExpiracao())
           .sign(algoritmo);
+
+      System.out.println("TOKEN MOSTRADO:  " + tokenGerado);
+      return tokenGerado;
+//      return JWT.create()
+//          .withIssuer("API Forum Hub")
+//          .withSubject(usuario.getLogin())
+//          .withExpiresAt(dataExpiracao())
+//          .sign(algoritmo);
     } catch (JWTCreationException exception){
       throw new RuntimeException("erro ao gerar token jwt", exception);
     }
